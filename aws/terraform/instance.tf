@@ -4,10 +4,10 @@
 # If you followed the NGC AWS setup, no changes should be needed here.
 
 data "aws_ami" "nv_volta_dl_ami" {
-  owners = ["869003165553"]
+  owners = ["679593333241"]
   filter {
     name   = "name"
-    values = ["NVIDIA Volta Deep Learning AMI"]
+    values = ["NVIDIA Volta Deep Learning AMI*"]
   }
   most_recent = true
 }
