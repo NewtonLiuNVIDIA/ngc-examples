@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# aws_create_instance.sh                         10/23/2017 17:15:00
+# aws_create_instance.sh                         10/26/2017 13:15:00
 #
 # Copyright (c) 2017, NVIDIA CORPORATION.  All rights reserved.
 #
@@ -63,10 +63,15 @@
 
     REGION="<WHERE YOU WILL RUN YOUR INSTANCE>"
 
-        # AMI NAME - don’t forget the single qoutes!
+        # Published AMI NAME
         # This is the name that NVIDIA publishes to on the AWS MarketPlace
 
-    IMAGE_NAME='NVIDIA Volta Deep Learning AMI'
+    IMAGE_NAME_FULL="NVIDIA Volta Deep Learning AMI-46a68101-e56b-41cd-8e32-631ac6e5d02b-ami-655e831f.4"
+    IMAGE_NAME_WILD="NVIDIA Volta Deep Learning AMI*"
+    AWS_MARKETPLACE_OWNER_ID="679593333241"
+
+    IMAGE_NAME="$IMAGE_NAME_WILD"        # wild card works if done right. Code is returing FIRST if multiple finds
+    OWNER_ID=""                          # owner id can be supplied, but slower, so don't
 
         # So it only needs to be update in one place, here is the name of
         # the default AWS Ubuntu image that not support GPUs. It's here for
@@ -600,15 +605,22 @@ CreateSecurityGroup() {
             FILE_SYS_JSON=$(aws efs describe-file-systems)    # no '--filters' by name on this cmd
             IDX=0
             while [ 1 ]; do
+                EFS_FILESYS_ID=$(echo $FILE_SYS_JSON | jq .FileSystems[$IDX].FileSystemId | sed 's/\"//g' )
+
+                    # the "Name" field picked up below is and optional tag that the user's may not
+                    # fill in -- can't use it for "end of list" -- use FileSystemId instead
+
+                if [ "$EFS_FILESYS_ID" == "null" ]; then       # end of list
+                    break;
+                fi
+
+                    # The "Name" is what we are really interested in
+
                 FOUND_NAME=$(echo $FILE_SYS_JSON | jq .FileSystems[$IDX].Name | sed 's/\"//g' )
-                if [ "$FOUND_NAME" == "null" ]; then
-                    break;
-                fi
                 if [ "$FOUND_NAME" == "$EFS_VOLUME_NAME" ]; then
-                    EFS_FILESYS_ID=$(echo $FILE_SYS_JSON | jq .FileSystems[$IDX].FileSystemId | sed 's/\"//g' )
                     break;
                 fi
-                IDX=$((IDX+1))
+                IDX=$((IDX+1))                  # didn't find, try the next one
             done
             if [ "$EFS_FILESYS_ID" == "" ]; then
                 echo "Could not find EFS volume by name of \"$EFS_VOLUME_NAME\"" >&2
@@ -631,7 +643,13 @@ CreateSecurityGroup() {
 # Note that currently (10/2017) the ID of this image changes whenever we update 
 # the image. This query here does a name-to-id lookup. The name should remain constant. 
 
-    IMAGE_JSON=$(aws ec2 describe-images --filters "Name=name,Values=\"$IMAGE_NAME\"")
+    if [ "$OWNER_ID" == "" ]; then
+       OWNER_OPT=""                      # full name must be used if don't supply OWNER_ID
+    else
+       OWNER_OPT="--owners $OWNER_ID"    # supplying OWNER_ID slows search way down
+    fi
+
+    IMAGE_JSON=$(aws ec2 describe-images $OWNER_OPT --filters "Name=name,Values=\"$IMAGE_NAME\"")
     IMAGE_ID=$(echo $IMAGE_JSON | jq .Images[0].ImageId | sed 's/\"//g')                  # no quotes
 
          # interesting type of error here -- is if the name given to packer has
