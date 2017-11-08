@@ -1,8 +1,15 @@
-# NVIDIA NGC on AWS Tutorial - Terraform Config
+# Terraform Config for Using NGC with AWS
 
-[Terraform](https://www.terraform.io/) configuration following the NVIDIA
-NGC on AWS tutorial.
+Example Terraform configuration which coresponds to the
+[Using NGC with AWS Setup Guide](https://docs.nvidia.com/deeplearning/ngc/ngc-aws-setup-guide/).
 
-## Quick Start
+This configuration starts an on-demand p3.2xlarge in us-west-2. To use spot
+instances or use parameters different from the guide, review and modify
+the configuration files.
 
-Read the tutorial TODO: put link here.
+## Additional Documentation
+
+* [NVIDIA GPU Cloud Documentation](https://docs.nvidia.com/deeplearning/ngc/index.html)
+* [NGC Dashboard](https://ngc.nvidia.com/)
+* [Terraform](https://www.terraform.io/)
+* [Terraofrm - AWS Provider Documentation](https://www.terraform.io/docs/providers/aws/index.html)
