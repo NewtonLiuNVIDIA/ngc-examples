@@ -63,12 +63,12 @@
 
     REGION="<WHERE YOU WILL RUN YOUR INSTANCE>"
 
-        # Published AMI NAME
+        # Published AMI NAME 
         # This is the name that NVIDIA publishes to on the AWS MarketPlace
 
     IMAGE_NAME_FULL="NVIDIA Volta Deep Learning AMI-46a68101-e56b-41cd-8e32-631ac6e5d02b-ami-655e831f.4"
     IMAGE_NAME_WILD="NVIDIA Volta Deep Learning AMI*"
-    AWS_MARKETPLACE_OWNER_ID="679593333241"
+    AWS_MARKETPLACE_OWNER_ID="679593333241"  
 
     IMAGE_NAME="$IMAGE_NAME_WILD"        # wild card works if done right. Code is returing FIRST if multiple finds
     OWNER_ID=""                          # owner id can be supplied, but slower, so don't
@@ -607,13 +607,13 @@ CreateSecurityGroup() {
             while [ 1 ]; do
                 EFS_FILESYS_ID=$(echo $FILE_SYS_JSON | jq .FileSystems[$IDX].FileSystemId | sed 's/\"//g' )
 
-                    # the "Name" field picked up below is and optional tag that the user's may not
+                    # the "Name" field picked up below is and optional tag that the user's may not 
                     # fill in -- can't use it for "end of list" -- use FileSystemId instead
 
                 if [ "$EFS_FILESYS_ID" == "null" ]; then       # end of list
                     break;
                 fi
-
+             
                     # The "Name" is what we are really interested in
 
                 FOUND_NAME=$(echo $FILE_SYS_JSON | jq .FileSystems[$IDX].Name | sed 's/\"//g' )
@@ -932,8 +932,8 @@ CreateSecurityGroup() {
          CMD="lsblk;       
               sleep 2;
               sudo mkfs -t ext4 /dev/xvdb; 
-              sudo mkdir /dataset; 
-              sudo mount /dev/xvdb /t; 
+              sudo mkdir /datavol; 
+              sudo mount /dev/xvdb /datavol; 
               df -h;
               echo \"\""
           ssh -i $KEY_PATH/$KEY_NAME.pem $LOGIN_NAME@$PUBLIC_ID $CMD
@@ -1053,7 +1053,7 @@ CreateSecurityGroup() {
 
     if [ "$STATE_TO_CHECK" == "" ]; then 
         echo ""
-        echo "To reconnect to $NAME_TAG_INSTANCE:"
+        echo "To reconnect to \"$NAME_TAG_INSTANCE\""
         echo "    ssh -i $KEY_FILE $LOGIN_NAME@$PUBLIC_ID"
         echo ""
     else 

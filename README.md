@@ -3,11 +3,10 @@
 
 This directory contains sample source and documentation that can help you to understand, use and develop projects within the NVIDIA GPU Cloud (NGC) environment. These may provide reference points for your own development work. 
 
-## Currently supported distributions 
+## Currently supported cloud providers
 
-### aws
+### AWS
 
-For the [AWS Cloud][1]
+For [AWS Cloud][1]
 
-
-[1]: https://aws.amazon.com/ "Amazon Cloud" 
+[1]: https://aws.amazon.com/ "Amazon Cloud"

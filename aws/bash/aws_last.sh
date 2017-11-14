@@ -264,7 +264,7 @@ WaitForPing() {
         sleep 1
     done
     if [ $ATTEMPT -gt $MAX_ATTEMPTS ]; then
-        echo "Timeout waiting for SSH to $PUBLIC_ID"
+        echo "Timeout waiting for ping to $PUBLIC_ID"
         exit 1
     fi
     return 0
@@ -283,12 +283,9 @@ WaitForSSH() {
     local STR RC
 
     for (( ATTEMPT=0; ATTEMPT<$MAX_ATTEMPTS; ATTEMPT++)); do
-
-    #    echo "ssh -oStrictHostKeyChecking=no -i $KEY_FILE $LOGIN_NAME@$PUBLIC_ID \"uptime\" "
-      STR=$(ssh -oStrictHostKeyChecking=no -i $KEY_FILE $LOGIN_NAME@$PUBLIC_ID "uptime" 2> /dev/null)
-   #     STR=$(ssh -oStrictHostKeyChecking=no -i $KEY_FILE $LOGIN_NAME@$PUBLIC_ID "uptime" )
+        STR=$(ssh -oStrictHostKeyChecking=no -i $KEY_FILE $LOGIN_NAME@$PUBLIC_ID "uptime" 2> /dev/null)
         RC=$?
-        if [ $RC == 0 ]; then    # no error
+        if [ $RC -eq  0 ]; then    # no error
             break
         fi
         echo -ne "$ATTEMPT ssh $PUBLIC_ID    \r"

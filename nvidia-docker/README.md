@@ -1,5 +1,5 @@
 # NVIDIA Docker Examples
-*NVIDIA/ngc/nvidia-docker/README.md*
+*NVIDIA/ngc/nvidia-dockers/README.md*
 
 Examples of how [nvidia-docker][1] can be used to run GPU enabled jobs.
 

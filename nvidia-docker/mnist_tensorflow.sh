@@ -13,8 +13,14 @@
 # Example code to show how to run the pytorch container with nvidia-docker
 # this example does an MNIST training run
 
+# Get the tag, if specified
+TAG=$1
+if [ -z ${TAG} ]; then
+    TAG="17.10"
+fi
+
 nvidia-docker run --rm \
     -w /opt/tensorflow/tensorflow/examples/tutorials/mnist \
-    nvcr.io/nvidia/tensorflow:17.10 \
+    nvcr.io/nvidia/tensorflow:${TAG} \
     python mnist_with_summaries.py
 
