@@ -12,4 +12,4 @@ the configuration files.
 * [NVIDIA GPU Cloud Documentation](https://docs.nvidia.com/deeplearning/ngc/index.html)
 * [NGC Dashboard](https://ngc.nvidia.com/)
 * [Terraform](https://www.terraform.io/)
-* [Terraofrm - AWS Provider Documentation](https://www.terraform.io/docs/providers/aws/index.html)
+* [Terraform - AWS Provider Documentation](https://www.terraform.io/docs/providers/aws/index.html)
