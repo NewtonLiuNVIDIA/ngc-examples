@@ -9,4 +9,11 @@ This directory contains sample source and documentation that can help you to und
 
 For [AWS Cloud][1]
 
+## NCSP - Nvidia Cloud Service Provider example script
+
+This project contains well documented python code that provides a Cloud Service Provider (CSP) independent interface to perform the basic create/delete/ssh and query operations on cloud instances. You will need your own accounts and CSP provided software to access their servers, but the code here shows you one way to script on top in a independent way. This is a good way to learn about the simularities and differences between the various CSPs. 
+
+A template starting file is provided if you wish to design your own interface within this infrastructure.  
+
+
 [1]: https://aws.amazon.com/ "Amazon Cloud"
