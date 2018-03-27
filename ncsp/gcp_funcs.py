@@ -61,9 +61,9 @@ default_min_cpu_platform        = "Automatic"
 default_min_cpu_platform_choices= ["Automatic", "Intel Groadwell", "Intel Skylake"] 
 default_subnet                  = "default"
 default_accelerator_type        = "nvidia-tesla-p100"
-default_accelerator_type_choices= ["nvidia-tesla-p100", "nvidia-tesla-k80", "nvidia-tesla-v100"]  # should nquire?
+default_accelerator_type_choices= ["nvidia-tesla-p100"]
 default_accelerator_count       = 0
-default_accelerator_count_choices=[0,1,2,4,8]  # count depends upon type of GPU selected. only V100 supports 8
+default_accelerator_count_choices=[0,1,2,4]  # up to 4x P100s
 
 TIMEOUT_1 = (60 * 2) # create, start, terminate
 TIMEOUT_2 = (60 * 1) # stop, ping
@@ -474,8 +474,7 @@ class CSPClass(CSPBaseClass):
                
                 # if adding GPUs, add additional info to the VM name
                 #
-                # Google GPU 'accelerator' types are of form: nvidia-tesla-p100 and 
-                # nvidia-tesla-p100 and nvidia-tesla-k80 - too long for VM name which is
+                # Google GPU 'accelerator' types are of form: nvidia-tesla-p100 - too long for VM name which is
                 # limited to 61 chars - so strip of last what's after last '-' as name
                 #
                 # Remember with google, names must all be lowercase numbers/letters
@@ -895,12 +894,12 @@ class CSPClass(CSPBaseClass):
             for idx in range(0, items):
                 status = decoded_output[idx]["status"]                            # UP or ??
                 if (status == "RUNNING"):
-                    name              = decoded_output[idx]["name"]               # "k80-stress-test"
+                    name              = decoded_output[idx]["name"]               # "gpu-stress-test"
                     id                = decoded_output[idx]["id"]                 # "6069200451247196266"
-                    machineType       = decoded_output[idx]["machineType"]        # "https://www.googleapis.com/compute/beta/projects/k80-exploration/zones/us-central1-a/machineTypes/n1-standard-32-k80x8"
+                    machineType       = decoded_output[idx]["machineType"]        # "https://www.googleapis.com/compute/beta/projects/my-project/zones/us-central1-a/machineTypes/n1-standard-32-p100x4"
                     cpuPlatform       = decoded_output[idx]["cpuPlatform"]        # "Unknown CPU Platform"
                     creationTimestamp = decoded_output[idx]["creationTimestamp"]  # "2017-08-18T16:21:42.196-07:00"
-                    zone              = decoded_output[idx]["zone"]               # "https://www.googleapis.com/compute/beta/projects/k80-exploration/zones/us-east1-d"
+                    zone              = decoded_output[idx]["zone"]               # "https://www.googleapis.com/compute/beta/projects/my-project/zones/us-east1-d"
 
                         # pull interesting data out of longer fields that were gathered above
                     

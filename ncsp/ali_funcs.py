@@ -240,7 +240,7 @@ class CSPClass(CSPBaseClass):
     ##############################################################################
     # From image file name, Find the ID of the AMI instance that will be loaded
     #
-    # Get the image ID of the "NVIDIA Volta(TM) Deep Learning AMI" that we created.
+    # Get the image ID of the "NVIDIA GPU Cloud Virtual Machine Image" that we created.
     # Note that currently (10/2017) the ID of this image changes whenever we update 
     # the image. This query here does a name-to-id lookup. The name should remain constant.         
     def GetImageId(self, args):
