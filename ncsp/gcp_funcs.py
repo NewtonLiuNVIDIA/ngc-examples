@@ -1,4 +1,4 @@
-# gcp_funcs.py                                               3/23/2018
+# gcp_funcs.py                                               3/27/2018
 #
 # Copyright (c) 2018, NVIDIA CORPORATION.  All rights reserved.
 #
@@ -28,10 +28,12 @@ import os
 #                       based on the image_name being selected. 
 ##############################################################################
 
-default_key_name            = "my-security_key-name"
-default_region              = "my-region-name"
-default_user                = "my-user-name"
-default_service_account     = "my-service-account"
+
+default_key_name        = "my-security-key-name"
+default_region          = "my-region-name"
+default_user            = "my-user-name"
+default_project         = "my-project"
+default_service_account = "my-service-account"
 
 ##############################################################################
 # What image and instance type to bring up. 
@@ -46,8 +48,8 @@ default_service_account     = "my-service-account"
 ##############################################################################
 
 
-default_project                 = "k80-exploration"
-default_image_name              = "nvidia-gpu-cloud-image-20180314"
+default_image_project           = "nvidia-ngc-public" 
+default_image_name              = "nvidia-gpu-cloud-image"
 default_instance_type           = "n1-standard-1"
 default_instance_type_choices   = ['n1-standard-1', 'n1-standard-8', 'n1-standard-16', 'n1-standard-32', 'n1-standard-64'] 
 default_maintenance_policy      = "TERMINATE"
@@ -117,6 +119,9 @@ class CSPClass(CSPBaseClass):
                             help='region in which to create the VM')
         parser.add_argument('--project', dest='project',
                             default=default_project, required=False,
+                            help='is the project in which to create the VM')
+        parser.add_argument('--image_project', dest='image_project',
+                            default=default_image_project, required=False,
                             help='is the image project to which the image belongs')
         parser.add_argument('--service_account', dest='service_account', 
                             default=default_service_account, required=False,
@@ -488,7 +493,7 @@ class CSPClass(CSPBaseClass):
          
         self.Inform("CreateVM")   
         cmd =  "gcloud --format=\"json\" beta compute"
-        cmd += " --project \"%s\" "               % args.project             # "k80-exploration"
+        cmd += " --project \"%s\" "               % args.project             # "my-project"
         cmd += "instances create \"%s\""          % args.vm_name             # "pbradstr-Fri-2018Mar02-181931"
         cmd += " --zone \"%s\""                   % args.region              # "us-west1-b" 
         cmd += " --quiet"                                                    # reduces noize output
@@ -502,7 +507,7 @@ class CSPClass(CSPBaseClass):
             cmd += " --accelerator type=%s"       % accelerator              # nvidia-tesla-p100,count=1"
         cmd += " --min-cpu-platform \"%s\""       % args.min_cpu_platform    # "Automatic" 
         cmd += " --image \"%s\""                  % args.image_name          # "nvidia-gpu-cloud-image-20180227" 
-        cmd += " --image-project \"%s\""          % args.project             # "k80-exploration" 
+        cmd += " --image-project \"%s\""          % args.image_project       # "nvidia-ngc-public" 
         cmd += " --boot-disk-size %d"             % args.boot_disk_size      # 32, in GB
         cmd += " --boot-disk-type \"%s\""         % args.boot_disk_type      # "pd-standard" 
         cmd += " --boot-disk-device-name \"%s\""  % args.vm_name             #  assume same as VM name     

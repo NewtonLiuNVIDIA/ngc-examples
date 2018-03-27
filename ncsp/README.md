@@ -1,5 +1,5 @@
-#NCSP: NVIDIA Simple CSP interface
-*NVIDIA/ngc_examples/ncsp/README.md
+# NCSP: NVIDIA Simple CSP interface
+*NVIDIA/ngc_examples/ncsp/README.md*
 
 Tries to provide a common low level scriptable CLI interface to create, start, stop, restart and delete VMs on various different CSPs. With multiple CSPs and different (one could say unique) command syntaxes, parameters and id confiurations for each of them, trying to write common low level cross platform applications on top of each of them is problematic. 
 
@@ -10,7 +10,7 @@ There are four interdependent goals that are being addressed here:
 1. Explore differences between the commands,  features and performance of the different CSPs
 1. Provide a simple command line and scriptable interface to create and control VMs independent of the CSP. 
 
-Terraform could potentially be used for some of this, but while it provides interfaces to lots of different CSPs, it’s difficult to see exactly what the commands are doing at the bottom end. And that violates #2 above.  But there’s nothing here that means you can’t write a Terraform interface within NCSP if you want, ( Which would be a excellent way to learn it! ) 
+Terraform could potentially be used for some of this, but while it provides interfaces to lots of different CSPs, it’s difficult to see exactly what the commands are doing at the bottom end. And that violates #2 above.  But there’s nothing here that means you can’t write a Terraform interface within NCSP if you want, ( Which would be a excellent way to learn about Terraform! ) 
 
 This project attempts to achieve the above goals by doing the following
 
@@ -24,43 +24,71 @@ This project attempts to achieve the above goals by doing the following
 
 ## Quick overview of **ncsp**'s capabilities 
 
-If you want to bring up a VM on Alibaba, the command is
+If you want to bring up a VM on Amazon AWS, the command is
 ```
-ncsp ali createVM
+ncsp aws createVM
 ```
 Then to get it’s uptime
 ```
-ncsp ali ssh uptime
+ncsp aws ssh uptime
 ```
-You want to create VM using a particular instance type
+You want to create VM using a 8GPU instance - I.E type=p3.16xlarge
 ```
-ncsp ali --instance_type ecs.gn5-c4g1.xlarge
+ncsp aws --instance_type p3.16xlarge createVM
 ```
 And to delete the VM, its
 ```
-ncsp ali deleteVM
+ncsp aws deleteVM
 ```
 That’s it… 
 
-Oh, Alibaba isn't your thing today, and do you want to do it under aws? Notice that only the CSP's name has changed.. 
+If AWS isn't your thing today, and do you want to start using Google Cloud? Same commands as above, but notice that for the most part, only the CSP's name has changed
 ```bash
-ncsp aws --instance_type p3.2xlarge createVM
-ncsp aws ssh uptime
-ncsp aws deleteVM
+ncsp gcp --accelerator_count=8 createVM
+ncsp gcp ssh uptime
+ncsp gcp deleteVM
 ```
-Well AWS has been fun, but now you need to script a new Cloud Service Provider which we parameterize as **CSP** to run **mytest** 1000 times
+There might be a few CSP specific changes that you have to account for -- like the number of GPUs as '--accelerator_count=8' in the Google example above.
+
+Note that the general and many CSP specific command line options can be displayed via
 ```
-set -e   # have bash exit script on any non-zero error code
-for i in `seq 1 1000`;  do
+ncsp <CSP> --help
+```
+
+Well Google Cloud has been fun, but you might run into case where you need to run the same test multiple times on differnt CSPs. In this case, we parameterize the CSP name, as **CSP**, which is passed into a small scrupt run **mytest** in a loop 1000 times. 
+```
+ #!/bin/bash
+ # mytest script -- create/delete and run a test on a VM 1000 times
+ #
+ set -e   # have bash exit script on any non-zero error code
+ for i in `seq 1 1000`;  do
     nscp $CSP createVM
     nscp $CSP ssh mytest
     nscp $CSP deleteVM
-done
-if [ $? -ne 0 ]; then
-    ncsp $CSP ssh   # poke around if a error leaves VM up, will fail if dies
-fi
+ done
+ if [ $? -ne 0 ]; then
+     ncsp $CSP ssh   # poke around if a error leaves VM up, will fail if dies
+     return 1        # return 1 to stop outer loop
+ else
+     return 0        # test ran successful, return 0 
+ fi
 ```
  
+To run this on aws, google and alibaba, this is all you need to do:
+```
+set -e            # have bash exit script on first non-zero return
+for CSP in "aws" "gcp" "ali" ; do
+    mytest $CSP   # call script with each CSP name
+done
+```
+In fact, the command **./ncsp csps** lists all the CSP's that it knows about, so the above script could be even more generic by
+```
+set -e            # have bash exit script on first non-zero return
+for CSP in $(./ncsp csps); do 
+    mytest $CSP   # call script with CSP name
+done
+```
+
 To finish our quick look at **ncsp**, as this is an instructional application, you will want to see the commands are being sent out to the CSP's and their responses. The **--trace** option is used for this. The value is 0:**off**, 1:**commands**, 2:**commands and response**
 ```
 Peters-MacBook-Pro:ncsp pbradstr$ ./ncsp aws --trace 1 createVM             
@@ -92,9 +120,9 @@ There are a few values at the top of each csp specific module that you should se
  #                       based on the image_name being selected. 
  ##############################################################################
 
-default_key_name            = "tolken-key-name"
-default_region              = "middle-earth"
-default_user                = "precious"
+default_key_name        = "my-security-key-name"
+default_region          = "my-region-name"
+default_user            = "my-user-name"
 
  ############################################################################## 
  # What image and instance type to bring up. 
@@ -113,6 +141,8 @@ default_image_name      = "Generic <CSP> starter AMI*"
 default_instance_type   = "type1.small"   # 1gpu, 4gpu and 8gpu instances
 default_choices         = ['type1.small', 'type1.med', 'type1.large'] 
 ```
+
+There may be a few more of these, depending upon which CSP is being used. But all the necessary defaults that you must set up are located at the top of the file, and begin with **my_**
 
 While you can enter these on the command line, and they are persistent until the VM is deleted, you will find it easiest to set these up properly. 
 
@@ -217,10 +247,10 @@ There are no specific instance-types Vm's with GPUS for Google gcp - To create V
     
     csp:                    name of the supported Cloud Service Provider (csp)
         ALL                     Runs command on all CSP's one after each other
-        ali                     Alibaba Cloud Service Provide
-        gcp                     Google Cloud Service Provide
-        template                Template sample code for not yet developed <CSP
         aws                     Amazon Cloud Service Provide
+        gcp                     Google Cloud Service Provide
+        ali                     Alibaba Cloud Service Provide
+        template                Template sample code for not yet developed <CSP
      
     csp_cmd:  
         CSP specific commands:

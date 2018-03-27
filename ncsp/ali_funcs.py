@@ -1,4 +1,4 @@
-# ali_funcs.py                                               3/23/2018
+# ali_funcs.py                                               3/27/2018
 #
 # Copyright (c) 2018, NVIDIA CORPORATION.  All rights reserved.
 #
@@ -41,7 +41,12 @@ default_user            = "my-user-name"
 #                        command parser to verify choice before sending to csp
 ##############################################################################
 
-default_image_name      = "NVIDIA-GPU-Cloud-Image-18.02.0-2018.02.12"
+default_image_name_international      = "NVIDIA GPU Cloud Virtual Machine Image 18.03.0"
+default_image_name_china              = "NVIDIA GPU Cloud VM Image 18.03.0"
+
+    # Note different names for chinese marketplace verses international marketplace
+
+default_image_name      = default_image_name_international
 if (False):   # non GPU choices for script testing..
     default_instance_type   = "ecs.sn1.medium"
     default_choices         = ['ecs.sn1.small', 'ecs.sn1.large', 'ecs.sn1.xlarge',   # compute optimized
@@ -128,7 +133,10 @@ class CSPClass(CSPBaseClass):
                             default='PostPaid', required=False,
                             choices=['PostPaid', 'PrePaid'],  
                             help='Instance Charge Type')
-              
+	parser.add_argument('--image_owner_alias', dest='image_owner_alias',
+                            default='marketplace', required=False,
+                            choices=['system', 'self', 'others', 'marketplace'],
+                            help='Image owner')     
         parser.set_defaults(image_name=default_image_name);
         parser.set_defaults(key_name=default_key_name)
         parser.set_defaults(user=default_user)
@@ -246,7 +254,9 @@ class CSPClass(CSPBaseClass):
             
         cmd  = "aliyuncli ecs DescribeImages" 
         cmd += " --RegionId %s" % args.region
-        cmd += " --ImageName %s" % args.image_name
+        cmd += " --ImageName \"%s\"" % args.image_name
+        cmd += " --ImageOwnerAlias %s" % args.image_owner_alias
+
         retcode, output, errval = self.DoCmd(cmd)
        
         if (retcode != 0):

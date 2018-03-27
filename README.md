@@ -4,10 +4,9 @@
 This directory contains sample source and documentation that can help you to understand, use and develop projects within the NVIDIA GPU Cloud (NGC) environment. These may provide reference points for your own development work. 
 
 ## Currently supported cloud providers
-
-### AWS
-
-For [AWS Cloud][1]
+* [Amazon AWS][1]
+* [Google Cloud Platform][2]
+* [Alibaba Cloud][3]
 
 ## NCSP - Nvidia Cloud Service Provider example script
 
@@ -16,4 +15,6 @@ This project contains well documented python code that provides a Cloud Service 
 A template starting file is provided if you wish to design your own interface within this infrastructure.  
 
 
-[1]: https://aws.amazon.com/ "Amazon Cloud"
+[1]:https://aws.amazon.com/ "Amazon Cloud"
+[2]:https://cloud.google.com/ "Google Cloud"
+[3]:https://www.alibabacloud.com "Alibaba Cloud"
